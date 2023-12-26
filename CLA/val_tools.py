@@ -286,16 +286,16 @@ def uavidtesting(args, model, overlap=2/3, iter=None):
         # image = F.softmax(image, dim=1)
 
         output = predict_sliding_for_one(args, model, image.numpy(), overlap=overlap, mode='cuda')
-        plabel = pseudo_label(output)
+        plabel = pseudo_label(output) # only for the possible enhancement using self-training. 
 
         seg_pred = np.asarray(np.argmax(output, axis=2), dtype=np.uint8)
         seg_pred_s = seg_pred[np.newaxis, :] # 1024 * 1024
-        seg_pred_s = torch.from_numpy(seg_pred_s) # 1 * 1024 * 1024
-        output_lab = PILImage.fromarray(plabel.astype(np.uint8))
+        seg_pred_s = torch.from_numpy(seg_pred_s) # 1 * 1024 * 1024 # the predicted labels # for accuracy computation.
+        output_lab = PILImage.fromarray(plabel.astype(np.uint8)) # only for the possible enhancement using self-training. 
         temp_name = seq[0] + '_' + name[0][0: name[0].rfind('.')]
         if not os.path.exists(foldname + '/Preds'):
             os.makedirs(foldname + '/Preds')
-        output_lab.save(foldname + '/Preds/' + temp_name + '.png')
+        output_lab.save(foldname + '/Preds/' + temp_name + '.png') # only for the possible enhancement using self-training.
 
         seg_pred = clrEnc.inverse_transform(seg_pred)
         output_im = PILImage.fromarray(seg_pred)
